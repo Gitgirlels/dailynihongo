@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>漢字道 - Daily Kanji Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Shippori+Mincho:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #1a1a1a;
+            --paper: #f5f1e8;
+            --cream: #faf8f3;
+            --vermillion: #d64933;
+            --gold: #c9a227;
+            --moss: #6b7c5e;
+            --shadow: rgba(26, 26, 26, 0.08);
+            --correct: #4a7c59;
+            --incorrect: #c44536;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Washi paper texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 2rem 1rem 1rem;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+            background: linear-gradient(180deg, var(--cream) 0%, var(--paper) 100%);
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            color: var(--ink);
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::before {
+            content: '漢字道';
+            position: absolute;
+            top: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            letter-spacing: 0.5em;
+            color: var(--vermillion);
+            font-weight: 400;
+        }
+
+        .subtitle {
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--moss);
+            margin-top: 0.5rem;
+        }
+
+        .date-display {
+            font-size: 0.85rem;
+            color: var(--ink);
+            opacity: 0.6;
+            margin-top: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Main container */
+        main {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Game states */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Start screen */
+        .start-screen {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .intro-text {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: var(--ink);
+            opacity: 0.8;
+        }
+
+        .game-modes {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .mode-btn {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 1.25rem 2rem;
+            border: 2px solid var(--ink);
+            background: transparent;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .mode-btn:hover {
+            color: var(--paper);
+        }
+
+        .mode-btn:hover::before {
+            left: 0;
+        }
+
+        .mode-btn .japanese {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 0.25rem;
+            opacity: 0.7;
+        }
+
+        /* Quiz screen */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+        }
+
+        .progress-info {
+            font-size: 0.85rem;
+            color: var(--moss);
+        }
+
+        .timer {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--ink);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .timer.warning {
+            color: var(--vermillion);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .question-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .kanji-display {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 8rem;
+            font-weight: 800;
+            color: var(--ink);
+            line-height: 1;
+            margin: 2rem 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        .kanji-display::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: var(--vermillion);
+            opacity: 0.6;
+        }
+
+        .question-type {
+            font-size: 0.85rem;
+            color: var(--moss);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .word-display {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin: 1.5rem 0;
+        }
+
+        .reading-hint {
+            font-size: 1rem;
+            color: var(--moss);
+            margin-bottom: 1rem;
+        }
+
+        /* Answer options */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .option-btn {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 1rem;
+            padding: 1.25rem 1rem;
+            border: 1px solid rgba(26, 26, 26, 0.2);
+            background: var(--cream);
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--ink);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .option-btn.correct {
+            background: var(--correct);
+            color: white;
+            border-color: var(--correct);
+        }
+
+        .option-btn.incorrect {
+            background: var(--incorrect);
+            color: white;
+            border-color: var(--incorrect);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        /* Text input mode */
+        .input-container {
+            margin-top: 2rem;
+        }
+
+        .answer-input {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 1.5rem;
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(26, 26, 26, 0.2);
+            background: var(--cream);
+            color: var(--ink);
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .answer-input:focus {
+            border-color: var(--ink);
+        }
+
+        .answer-input::placeholder {
+            color: rgba(26, 26, 26, 0.3);
+        }
+
+        .submit-btn {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1rem;
+            border: 2px solid var(--ink);
+            background: var(--ink);
+            color: var(--paper);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: transparent;
+            color: var(--ink);
+        }
+
+        /* Feedback */
+        .feedback {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border-radius: 4px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback.correct {
+            background: rgba(74, 124, 89, 0.1);
+            border: 1px solid var(--correct);
+        }
+
+        .feedback.incorrect {
+            background: rgba(196, 69, 54, 0.1);
+            border: 1px solid var(--incorrect);
+        }
+
+        .feedback-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feedback-text {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .correct-answer {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .next-btn {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.75rem 2rem;
+            margin-top: 1rem;
+            border: 1px solid currentColor;
+            background: transparent;
+            color: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .next-btn:hover {
+            background: var(--ink);
+            color: var(--paper);
+            border-color: var(--ink);
+        }
+
+        /* Results screen */
+        .results-screen {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .results-title {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .results-subtitle {
+            font-size: 0.9rem;
+            color: var(--moss);
+            margin-bottom: 2rem;
+        }
+
+        .score-display {
+            background: var(--cream);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(26, 26, 26, 0.1);
+        }
+
+        .score-number {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--vermillion);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.85rem;
+            color: var(--moss);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            background: var(--cream);
+            border: 1px solid rgba(26, 26, 26, 0.1);
+        }
+
+        .stat-value {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--moss);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+        }
+
+        /* Share section */
+        .share-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(26, 26, 26, 0.1);
+        }
+
+        .share-grid {
+            font-family: monospace;
+            font-size: 1.2rem;
+            line-height: 1.4;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--cream);
+            border: 1px solid rgba(26, 26, 26, 0.1);
+        }
+
+        .share-btn {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 1rem 2rem;
+            border: 2px solid var(--ink);
+            background: var(--ink);
+            color: var(--paper);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0.5rem;
+        }
+
+        .share-btn:hover {
+            background: transparent;
+            color: var(--ink);
+        }
+
+        .share-btn.copied {
+            background: var(--correct);
+            border-color: var(--correct);
+        }
+
+        /* Leaderboard */
+        .leaderboard {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .leaderboard-title {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .leaderboard-list {
+            background: var(--cream);
+            border: 1px solid rgba(26, 26, 26, 0.1);
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.05);
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-item.current {
+            background: rgba(201, 162, 39, 0.1);
+        }
+
+        .rank {
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 600;
+            min-width: 2rem;
+        }
+
+        .rank.gold { color: var(--gold); }
+        .rank.silver { color: #8c8c8c; }
+        .rank.bronze { color: #b87333; }
+
+        .player-name {
+            flex: 1;
+            margin-left: 1rem;
+        }
+
+        .player-score {
+            font-weight: 500;
+        }
+
+        .player-time {
+            font-size: 0.8rem;
+            color: var(--moss);
+            margin-left: 1rem;
+        }
+
+        /* Play again */
+        .play-again-btn {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.75rem 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--moss);
+            background: transparent;
+            color: var(--moss);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .play-again-btn:hover {
+            border-color: var(--ink);
+            color: var(--ink);
+        }
+
+        /* Already played */
+        .already-played {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .comeback-time {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--vermillion);
+            margin: 1rem 0;
+        }
+
+        /* Decorative elements */
+        .seal {
+            width: 60px;
+            height: 60px;
+            background: var(--vermillion);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem auto;
+            transform: rotate(-5deg);
+            box-shadow: 0 2px 8px rgba(214, 73, 51, 0.3);
+        }
+
+        .seal-text {
+            font-family: 'Shippori Mincho', serif;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        /* Personal Bests */
+        .personal-bests {
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .pb-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.05);
+        }
+
+        .pb-item:last-child {
+            border-bottom: none;
+        }
+
+        .pb-item.current {
+            background: rgba(201, 162, 39, 0.1);
+        }
+
+        .pb-item.new-record {
+            background: rgba(74, 124, 89, 0.15);
+        }
+
+        .pb-label {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .pb-value {
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .pb-date {
+            font-size: 0.75rem;
+            color: var(--moss);
+            margin-left: 1rem;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .new-record-badge {
+            background: var(--correct);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 2px;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            animation: glow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(74, 124, 89, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(74, 124, 89, 0.8); }
+        }
+
+        .no-pb {
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--moss);
+            font-size: 0.9rem;
+        }
+
+        .improvement {
+            font-size: 0.75rem;
+            color: var(--correct);
+            margin-left: 0.5rem;
+        }
+
+        .improvement.negative {
+            color: var(--incorrect);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 2rem;
+            }
+
+            .kanji-display {
+                font-size: 6rem;
+            }
+
+            .word-display {
+                font-size: 2.5rem;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="logo">KANJIDŌ</h1>
+        <p class="subtitle">Daily Kanji Challenge</p>
+        <p class="date-display" id="dateDisplay"></p>
+    </header>
+
+    <main>
+        <!-- Start Screen -->
+        <div class="screen active" id="startScreen">
+            <div class="start-screen">
+                <p class="intro-text">
+                    Test your knowledge of Japanese kanji and vocabulary.<br>
+                    Complete today's challenge and compete with players worldwide.
+                </p>
+                
+                <div class="seal">
+                    <span class="seal-text">今</span>
+                </div>
+
+                <div class="game-modes">
+                    <button class="mode-btn" onclick="startGame('kanji')">
+                        Kanji Meaning
+                        <span class="japanese">漢字の意味</span>
+                    </button>
+                    <button class="mode-btn" onclick="startGame('reading')">
+                        Kanji Reading
+                        <span class="japanese">漢字の読み方</span>
+                    </button>
+                    <button class="mode-btn" onclick="startGame('word')">
+                        Vocabulary
+                        <span class="japanese">語彙</span>
+                    </button>
+                    <button class="mode-btn" onclick="startGame('mixed')">
+                        Mixed Challenge
+                        <span class="japanese">総合問題</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div class="screen" id="quizScreen">
+            <div class="quiz-header">
+                <div class="progress-info">
+                    <span id="questionNum">1</span> / <span id="totalQuestions">10</span>
+                </div>
+                <div class="timer" id="timer">0:00</div>
+            </div>
+
+            <div class="question-container" id="questionContainer">
+                <!-- Question content injected here -->
+            </div>
+
+            <div id="answerArea">
+                <!-- Answer options injected here -->
+            </div>
+
+            <div id="feedbackArea" style="display: none;">
+                <!-- Feedback injected here -->
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="screen" id="resultsScreen">
+            <div class="results-screen">
+                <h2 class="results-title">Today's Results</h2>
+                <p class="results-subtitle" id="resultsDate"></p>
+
+                <div class="score-display">
+                    <div class="score-number" id="finalScore">0</div>
+                    <div class="score-label">Points</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="correctCount">0</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalTime">0:00</div>
+                        <div class="stat-label">Time</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="streakCount">0</div>
+                        <div class="stat-label">Streak</div>
+                    </div>
+                </div>
+
+                <div class="share-section">
+                    <p>Share your results:</p>
+                    <div class="share-grid" id="shareGrid"></div>
+                    <button class="share-btn" id="copyBtn" onclick="copyResults()">Copy Results</button>
+                </div>
+
+                <div class="personal-bests">
+                    <h3 class="leaderboard-title">Your Personal Bests</h3>
+                    <div class="leaderboard-list" id="personalBests">
+                        <!-- Personal bests injected here -->
+                    </div>
+                </div>
+
+                <button class="play-again-btn" onclick="location.reload()">Play Another Mode</button>
+            </div>
+        </div>
+
+        <!-- Already Played Screen -->
+        <div class="screen" id="alreadyPlayedScreen">
+            <div class="already-played">
+                <div class="seal">
+                    <span class="seal-text">完</span>
+                </div>
+                <h2 class="results-title">You've completed today's challenge!</h2>
+                <p class="results-subtitle">Come back tomorrow for a new set of questions.</p>
+                <div class="comeback-time" id="comebackTime">--:--:--</div>
+                <p style="color: var(--moss); font-size: 0.9rem;">until the next challenge</p>
+                
+                <div id="previousResults" style="margin-top: 2rem;">
+                    <!-- Previous results shown here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ==================== DATA ====================
+        const kanjiData = [
+            { kanji: '日', meaning: 'sun, day', onyomi: 'ニチ, ジツ', kunyomi: 'ひ, -か', jlpt: 5 },
+            { kanji: '月', meaning: 'moon, month', onyomi: 'ゲツ, ガツ', kunyomi: 'つき', jlpt: 5 },
+            { kanji: '火', meaning: 'fire', onyomi: 'カ', kunyomi: 'ひ', jlpt: 5 },
+            { kanji: '水', meaning: 'water', onyomi: 'スイ', kunyomi: 'みず', jlpt: 5 },
+            { kanji: '木', meaning: 'tree, wood', onyomi: 'モク, ボク', kunyomi: 'き', jlpt: 5 },
+            { kanji: '金', meaning: 'gold, money', onyomi: 'キン, コン', kunyomi: 'かね', jlpt: 5 },
+            { kanji: '土', meaning: 'earth, soil', onyomi: 'ド, ト', kunyomi: 'つち', jlpt: 5 },
+            { kanji: '山', meaning: 'mountain', onyomi: 'サン', kunyomi: 'やま', jlpt: 5 },
+            { kanji: '川', meaning: 'river', onyomi: 'セン', kunyomi: 'かわ', jlpt: 5 },
+            { kanji: '田', meaning: 'rice field', onyomi: 'デン', kunyomi: 'た', jlpt: 5 },
+            { kanji: '人', meaning: 'person', onyomi: 'ジン, ニン', kunyomi: 'ひと', jlpt: 5 },
+            { kanji: '口', meaning: 'mouth', onyomi: 'コウ, ク', kunyomi: 'くち', jlpt: 5 },
+            { kanji: '目', meaning: 'eye', onyomi: 'モク, ボク', kunyomi: 'め', jlpt: 5 },
+            { kanji: '耳', meaning: 'ear', onyomi: 'ジ', kunyomi: 'みみ', jlpt: 5 },
+            { kanji: '手', meaning: 'hand', onyomi: 'シュ', kunyomi: 'て', jlpt: 5 },
+            { kanji: '足', meaning: 'foot, leg', onyomi: 'ソク', kunyomi: 'あし', jlpt: 5 },
+            { kanji: '大', meaning: 'big, large', onyomi: 'ダイ, タイ', kunyomi: 'おお', jlpt: 5 },
+            { kanji: '小', meaning: 'small, little', onyomi: 'ショウ', kunyomi: 'ちい, こ, お', jlpt: 5 },
+            { kanji: '上', meaning: 'up, above', onyomi: 'ジョウ', kunyomi: 'うえ, あ', jlpt: 5 },
+            { kanji: '下', meaning: 'down, below', onyomi: 'カ, ゲ', kunyomi: 'した, さ, くだ', jlpt: 5 },
+            { kanji: '中', meaning: 'middle, inside', onyomi: 'チュウ', kunyomi: 'なか', jlpt: 5 },
+            { kanji: '左', meaning: 'left', onyomi: 'サ', kunyomi: 'ひだり', jlpt: 5 },
+            { kanji: '右', meaning: 'right', onyomi: 'ウ, ユウ', kunyomi: 'みぎ', jlpt: 5 },
+            { kanji: '前', meaning: 'front, before', onyomi: 'ゼン', kunyomi: 'まえ', jlpt: 5 },
+            { kanji: '後', meaning: 'behind, after', onyomi: 'ゴ, コウ', kunyomi: 'うし, あと', jlpt: 5 },
+            { kanji: '一', meaning: 'one', onyomi: 'イチ', kunyomi: 'ひと', jlpt: 5 },
+            { kanji: '二', meaning: 'two', onyomi: 'ニ', kunyomi: 'ふた', jlpt: 5 },
+            { kanji: '三', meaning: 'three', onyomi: 'サン', kunyomi: 'み', jlpt: 5 },
+            { kanji: '四', meaning: 'four', onyomi: 'シ', kunyomi: 'よ, よん', jlpt: 5 },
+            { kanji: '五', meaning: 'five', onyomi: 'ゴ', kunyomi: 'いつ', jlpt: 5 },
+            { kanji: '六', meaning: 'six', onyomi: 'ロク', kunyomi: 'む', jlpt: 5 },
+            { kanji: '七', meaning: 'seven', onyomi: 'シチ', kunyomi: 'なな', jlpt: 5 },
+            { kanji: '八', meaning: 'eight', onyomi: 'ハチ', kunyomi: 'や', jlpt: 5 },
+            { kanji: '九', meaning: 'nine', onyomi: 'キュウ, ク', kunyomi: 'ここの', jlpt: 5 },
+            { kanji: '十', meaning: 'ten', onyomi: 'ジュウ', kunyomi: 'とお', jlpt: 5 },
+            { kanji: '百', meaning: 'hundred', onyomi: 'ヒャク', kunyomi: '', jlpt: 5 },
+            { kanji: '千', meaning: 'thousand', onyomi: 'セン', kunyomi: 'ち', jlpt: 5 },
+            { kanji: '万', meaning: 'ten thousand', onyomi: 'マン, バン', kunyomi: '', jlpt: 5 },
+            { kanji: '円', meaning: 'yen, circle', onyomi: 'エン', kunyomi: 'まる', jlpt: 5 },
+            { kanji: '年', meaning: 'year', onyomi: 'ネン', kunyomi: 'とし', jlpt: 5 },
+            { kanji: '時', meaning: 'time, hour', onyomi: 'ジ', kunyomi: 'とき', jlpt: 5 },
+            { kanji: '分', meaning: 'minute, part', onyomi: 'ブン, フン', kunyomi: 'わ', jlpt: 5 },
+            { kanji: '今', meaning: 'now', onyomi: 'コン, キン', kunyomi: 'いま', jlpt: 5 },
+            { kanji: '何', meaning: 'what', onyomi: 'カ', kunyomi: 'なに, なん', jlpt: 5 },
+            { kanji: '生', meaning: 'life, birth', onyomi: 'セイ, ショウ', kunyomi: 'い, う, は', jlpt: 5 },
+            { kanji: '学', meaning: 'study, learn', onyomi: 'ガク', kunyomi: 'まな', jlpt: 5 },
+            { kanji: '校', meaning: 'school', onyomi: 'コウ', kunyomi: '', jlpt: 5 },
+            { kanji: '先', meaning: 'previous, ahead', onyomi: 'セン', kunyomi: 'さき', jlpt: 5 },
+            { kanji: '本', meaning: 'book, origin', onyomi: 'ホン', kunyomi: 'もと', jlpt: 5 },
+            { kanji: '語', meaning: 'language, word', onyomi: 'ゴ', kunyomi: 'かた', jlpt: 5 },
+            { kanji: '読', meaning: 'read', onyomi: 'ドク, トク', kunyomi: 'よ', jlpt: 5 },
+            { kanji: '書', meaning: 'write', onyomi: 'ショ', kunyomi: 'か', jlpt: 5 },
+            { kanji: '見', meaning: 'see, look', onyomi: 'ケン', kunyomi: 'み', jlpt: 5 },
+            { kanji: '聞', meaning: 'hear, ask', onyomi: 'ブン, モン', kunyomi: 'き', jlpt: 5 },
+            { kanji: '話', meaning: 'speak, talk', onyomi: 'ワ', kunyomi: 'はな, はなし', jlpt: 5 },
+            { kanji: '食', meaning: 'eat, food', onyomi: 'ショク', kunyomi: 'た, く', jlpt: 5 },
+            { kanji: '飲', meaning: 'drink', onyomi: 'イン', kunyomi: 'の', jlpt: 5 },
+            { kanji: '行', meaning: 'go', onyomi: 'コウ, ギョウ', kunyomi: 'い, ゆ', jlpt: 5 },
+            { kanji: '来', meaning: 'come', onyomi: 'ライ', kunyomi: 'く, き', jlpt: 5 },
+            { kanji: '出', meaning: 'exit, leave', onyomi: 'シュツ', kunyomi: 'で, だ', jlpt: 5 },
+            { kanji: '入', meaning: 'enter', onyomi: 'ニュウ', kunyomi: 'い, はい', jlpt: 5 },
+            { kanji: '休', meaning: 'rest', onyomi: 'キュウ', kunyomi: 'やす', jlpt: 5 },
+            { kanji: '買', meaning: 'buy', onyomi: 'バイ', kunyomi: 'か', jlpt: 5 },
+            { kanji: '売', meaning: 'sell', onyomi: 'バイ', kunyomi: 'う', jlpt: 4 },
+            { kanji: '電', meaning: 'electricity', onyomi: 'デン', kunyomi: '', jlpt: 5 },
+            { kanji: '車', meaning: 'car, vehicle', onyomi: 'シャ', kunyomi: 'くるま', jlpt: 5 },
+            { kanji: '駅', meaning: 'station', onyomi: 'エキ', kunyomi: '', jlpt: 5 },
+            { kanji: '道', meaning: 'road, way', onyomi: 'ドウ', kunyomi: 'みち', jlpt: 5 },
+            { kanji: '店', meaning: 'shop, store', onyomi: 'テン', kunyomi: 'みせ', jlpt: 5 },
+            { kanji: '会', meaning: 'meet, society', onyomi: 'カイ, エ', kunyomi: 'あ', jlpt: 5 },
+            { kanji: '社', meaning: 'company, shrine', onyomi: 'シャ', kunyomi: 'やしろ', jlpt: 5 },
+            { kanji: '国', meaning: 'country', onyomi: 'コク', kunyomi: 'くに', jlpt: 5 },
+            { kanji: '外', meaning: 'outside', onyomi: 'ガイ, ゲ', kunyomi: 'そと, ほか', jlpt: 5 },
+            { kanji: '北', meaning: 'north', onyomi: 'ホク', kunyomi: 'きた', jlpt: 5 },
+            { kanji: '南', meaning: 'south', onyomi: 'ナン', kunyomi: 'みなみ', jlpt: 5 },
+            { kanji: '東', meaning: 'east', onyomi: 'トウ', kunyomi: 'ひがし', jlpt: 5 },
+            { kanji: '西', meaning: 'west', onyomi: 'セイ, サイ', kunyomi: 'にし', jlpt: 5 },
+            { kanji: '天', meaning: 'heaven, sky', onyomi: 'テン', kunyomi: 'あめ, あま', jlpt: 5 },
+            { kanji: '気', meaning: 'spirit, air', onyomi: 'キ, ケ', kunyomi: '', jlpt: 5 },
+            { kanji: '雨', meaning: 'rain', onyomi: 'ウ', kunyomi: 'あめ, あま', jlpt: 5 },
+            { kanji: '空', meaning: 'sky, empty', onyomi: 'クウ', kunyomi: 'そら, から, あ', jlpt: 5 },
+            { kanji: '花', meaning: 'flower', onyomi: 'カ', kunyomi: 'はな', jlpt: 5 },
+            { kanji: '白', meaning: 'white', onyomi: 'ハク, ビャク', kunyomi: 'しろ', jlpt: 5 },
+            { kanji: '黒', meaning: 'black', onyomi: 'コク', kunyomi: 'くろ', jlpt: 4 },
+            { kanji: '赤', meaning: 'red', onyomi: 'セキ', kunyomi: 'あか', jlpt: 4 },
+            { kanji: '青', meaning: 'blue, green', onyomi: 'セイ', kunyomi: 'あお', jlpt: 4 },
+            { kanji: '新', meaning: 'new', onyomi: 'シン', kunyomi: 'あたら, あら, にい', jlpt: 5 },
+            { kanji: '古', meaning: 'old', onyomi: 'コ', kunyomi: 'ふる', jlpt: 5 },
+            { kanji: '高', meaning: 'tall, expensive', onyomi: 'コウ', kunyomi: 'たか', jlpt: 5 },
+            { kanji: '安', meaning: 'cheap, peaceful', onyomi: 'アン', kunyomi: 'やす', jlpt: 5 },
+            { kanji: '長', meaning: 'long, leader', onyomi: 'チョウ', kunyomi: 'なが', jlpt: 5 },
+            { kanji: '短', meaning: 'short', onyomi: 'タン', kunyomi: 'みじか', jlpt: 4 },
+            { kanji: '多', meaning: 'many, much', onyomi: 'タ', kunyomi: 'おお', jlpt: 5 },
+            { kanji: '少', meaning: 'few, little', onyomi: 'ショウ', kunyomi: 'すく, すこ', jlpt: 5 },
+            { kanji: '早', meaning: 'early, fast', onyomi: 'ソウ, サッ', kunyomi: 'はや', jlpt: 5 },
+            { kanji: '朝', meaning: 'morning', onyomi: 'チョウ', kunyomi: 'あさ', jlpt: 5 },
+            { kanji: '昼', meaning: 'noon, daytime', onyomi: 'チュウ', kunyomi: 'ひる', jlpt: 5 },
+            { kanji: '夜', meaning: 'night', onyomi: 'ヤ', kunyomi: 'よる, よ', jlpt: 5 },
+            { kanji: '夕', meaning: 'evening', onyomi: 'セキ', kunyomi: 'ゆう', jlpt: 5 },
+            { kanji: '方', meaning: 'direction, person', onyomi: 'ホウ', kunyomi: 'かた', jlpt: 5 },
+            { kanji: '友', meaning: 'friend', onyomi: 'ユウ', kunyomi: 'とも', jlpt: 5 },
+            { kanji: '父', meaning: 'father', onyomi: 'フ', kunyomi: 'ちち', jlpt: 5 },
+            { kanji: '母', meaning: 'mother', onyomi: 'ボ', kunyomi: 'はは', jlpt: 5 },
+            { kanji: '男', meaning: 'man, male', onyomi: 'ダン, ナン', kunyomi: 'おとこ', jlpt: 5 },
+            { kanji: '女', meaning: 'woman, female', onyomi: 'ジョ, ニョ', kunyomi: 'おんな', jlpt: 5 },
+            { kanji: '子', meaning: 'child', onyomi: 'シ, ス', kunyomi: 'こ', jlpt: 5 },
+            { kanji: '名', meaning: 'name', onyomi: 'メイ, ミョウ', kunyomi: 'な', jlpt: 5 },
+        ];
+
+        const vocabularyData = [
+            { word: '学生', reading: 'がくせい', meaning: 'student' },
+            { word: '先生', reading: 'せんせい', meaning: 'teacher' },
+            { word: '日本', reading: 'にほん', meaning: 'Japan' },
+            { word: '日本語', reading: 'にほんご', meaning: 'Japanese language' },
+            { word: '大学', reading: 'だいがく', meaning: 'university' },
+            { word: '電車', reading: 'でんしゃ', meaning: 'train' },
+            { word: '会社', reading: 'かいしゃ', meaning: 'company' },
+            { word: '毎日', reading: 'まいにち', meaning: 'every day' },
+            { word: '今日', reading: 'きょう', meaning: 'today' },
+            { word: '明日', reading: 'あした', meaning: 'tomorrow' },
+            { word: '昨日', reading: 'きのう', meaning: 'yesterday' },
+            { word: '天気', reading: 'てんき', meaning: 'weather' },
+            { word: '元気', reading: 'げんき', meaning: 'healthy, energetic' },
+            { word: '友達', reading: 'ともだち', meaning: 'friend' },
+            { word: '時間', reading: 'じかん', meaning: 'time' },
+            { word: '仕事', reading: 'しごと', meaning: 'work, job' },
+            { word: '勉強', reading: 'べんきょう', meaning: 'study' },
+            { word: '食べ物', reading: 'たべもの', meaning: 'food' },
+            { word: '飲み物', reading: 'のみもの', meaning: 'drink' },
+            { word: '映画', reading: 'えいが', meaning: 'movie' },
+            { word: '音楽', reading: 'おんがく', meaning: 'music' },
+            { word: '病院', reading: 'びょういん', meaning: 'hospital' },
+            { word: '銀行', reading: 'ぎんこう', meaning: 'bank' },
+            { word: '図書館', reading: 'としょかん', meaning: 'library' },
+            { word: '空港', reading: 'くうこう', meaning: 'airport' },
+            { word: '写真', reading: 'しゃしん', meaning: 'photograph' },
+            { word: '旅行', reading: 'りょこう', meaning: 'travel' },
+            { word: '買い物', reading: 'かいもの', meaning: 'shopping' },
+            { word: '散歩', reading: 'さんぽ', meaning: 'walk, stroll' },
+            { word: '練習', reading: 'れんしゅう', meaning: 'practice' },
+            { word: '質問', reading: 'しつもん', meaning: 'question' },
+            { word: '意味', reading: 'いみ', meaning: 'meaning' },
+            { word: '問題', reading: 'もんだい', meaning: 'problem, question' },
+            { word: '答え', reading: 'こたえ', meaning: 'answer' },
+            { word: '家族', reading: 'かぞく', meaning: 'family' },
+            { word: '両親', reading: 'りょうしん', meaning: 'parents' },
+            { word: '兄弟', reading: 'きょうだい', meaning: 'siblings' },
+            { word: '彼女', reading: 'かのじょ', meaning: 'she, girlfriend' },
+            { word: '彼', reading: 'かれ', meaning: 'he, boyfriend' },
+            { word: '自分', reading: 'じぶん', meaning: 'oneself' },
+        ];
+
+        // ==================== GAME STATE ====================
+        let gameState = {
+            mode: null,
+            questions: [],
+            currentQuestion: 0,
+            score: 0,
+            correctCount: 0,
+            startTime: null,
+            totalTime: 0,
+            answers: [],
+            streak: 0,
+            maxStreak: 0
+        };
+
+        let timerInterval = null;
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function getTodayKey() {
+            const today = new Date();
+            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        }
+
+        function seededRandom(seed) {
+            const x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        }
+
+        function shuffleWithSeed(array, seed) {
+            const result = [...array];
+            for (let i = result.length - 1; i > 0; i--) {
+                const j = Math.floor(seededRandom(seed + i) * (i + 1));
+                [result[i], result[j]] = [result[j], result[i]];
+            }
+            return result;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function getDateSeed() {
+            const today = new Date();
+            return today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+        }
+
+        // ==================== DISPLAY FUNCTIONS ====================
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function updateDateDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('dateDisplay').textContent = new Date().toLocaleDateString('en-US', options);
+        }
+
+        // ==================== QUESTION GENERATION ====================
+        function generateQuestions(mode) {
+            const seed = getDateSeed();
+            const questions = [];
+            const numQuestions = 10;
+
+            if (mode === 'kanji' || mode === 'reading') {
+                const shuffledKanji = shuffleWithSeed(kanjiData, seed + (mode === 'reading' ? 1000 : 0));
+                const selected = shuffledKanji.slice(0, numQuestions);
+
+                selected.forEach((item, idx) => {
+                    const otherKanji = shuffledKanji.filter(k => k !== item);
+                    const wrongOptions = shuffleWithSeed(otherKanji, seed + idx).slice(0, 3);
+
+                    if (mode === 'kanji') {
+                        const options = shuffleWithSeed([
+                            { text: item.meaning, correct: true },
+                            ...wrongOptions.map(k => ({ text: k.meaning, correct: false }))
+                        ], seed + idx + 100);
+
+                        questions.push({
+                            type: 'kanji-meaning',
+                            kanji: item.kanji,
+                            correctAnswer: item.meaning,
+                            options: options
+                        });
+                    } else {
+                        const readings = item.kunyomi ? item.kunyomi.split(', ')[0] : item.onyomi.split(', ')[0];
+                        const wrongReadings = wrongOptions.map(k => k.kunyomi ? k.kunyomi.split(', ')[0] : k.onyomi.split(', ')[0]);
+                        
+                        const options = shuffleWithSeed([
+                            { text: readings, correct: true },
+                            ...wrongReadings.map(r => ({ text: r, correct: false }))
+                        ], seed + idx + 200);
+
+                        questions.push({
+                            type: 'kanji-reading',
+                            kanji: item.kanji,
+                            correctAnswer: readings,
+                            options: options
+                        });
+                    }
+                });
+            } else if (mode === 'word') {
+                const shuffledVocab = shuffleWithSeed(vocabularyData, seed + 2000);
+                const selected = shuffledVocab.slice(0, numQuestions);
+
+                selected.forEach((item, idx) => {
+                    const otherVocab = shuffledVocab.filter(v => v !== item);
+                    const wrongOptions = shuffleWithSeed(otherVocab, seed + idx + 300).slice(0, 3);
+
+                    const options = shuffleWithSeed([
+                        { text: item.meaning, correct: true },
+                        ...wrongOptions.map(v => ({ text: v.meaning, correct: false }))
+                    ], seed + idx + 400);
+
+                    questions.push({
+                        type: 'vocabulary',
+                        word: item.word,
+                        reading: item.reading,
+                        correctAnswer: item.meaning,
+                        options: options
+                    });
+                });
+            } else if (mode === 'mixed') {
+                const shuffledKanji = shuffleWithSeed(kanjiData, seed + 3000);
+                const shuffledVocab = shuffleWithSeed(vocabularyData, seed + 4000);
+
+                for (let i = 0; i < numQuestions; i++) {
+                    const questionType = seededRandom(seed + i * 10) > 0.5 ? 'kanji' : 'vocab';
+
+                    if (questionType === 'kanji') {
+                        const item = shuffledKanji[i % shuffledKanji.length];
+                        const otherKanji = shuffledKanji.filter(k => k !== item);
+                        const wrongOptions = shuffleWithSeed(otherKanji, seed + i + 500).slice(0, 3);
+
+                        const options = shuffleWithSeed([
+                            { text: item.meaning, correct: true },
+                            ...wrongOptions.map(k => ({ text: k.meaning, correct: false }))
+                        ], seed + i + 600);
+
+                        questions.push({
+                            type: 'kanji-meaning',
+                            kanji: item.kanji,
+                            correctAnswer: item.meaning,
+                            options: options
+                        });
+                    } else {
+                        const item = shuffledVocab[i % shuffledVocab.length];
+                        const otherVocab = shuffledVocab.filter(v => v !== item);
+                        const wrongOptions = shuffleWithSeed(otherVocab, seed + i + 700).slice(0, 3);
+
+                        const options = shuffleWithSeed([
+                            { text: item.meaning, correct: true },
+                            ...wrongOptions.map(v => ({ text: v.meaning, correct: false }))
+                        ], seed + i + 800);
+
+                        questions.push({
+                            type: 'vocabulary',
+                            word: item.word,
+                            reading: item.reading,
+                            correctAnswer: item.meaning,
+                            options: options
+                        });
+                    }
+                }
+            }
+
+            return questions;
+        }
+
+        // ==================== GAME LOGIC ====================
+        function startGame(mode) {
+            const storageKey = `kanjido-${mode}-${getTodayKey()}`;
+            const savedGame = localStorage.getItem(storageKey);
+
+            if (savedGame) {
+                const saved = JSON.parse(savedGame);
+                showAlreadyPlayed(saved, mode);
+                return;
+            }
+
+            gameState = {
+                mode: mode,
+                questions: generateQuestions(mode),
+                currentQuestion: 0,
+                score: 0,
+                correctCount: 0,
+                startTime: Date.now(),
+                totalTime: 0,
+                answers: [],
+                streak: 0,
+                maxStreak: 0
+            };
+
+            document.getElementById('totalQuestions').textContent = gameState.questions.length;
+            showScreen('quizScreen');
+            startTimer();
+            displayQuestion();
+        }
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+                timerEl.textContent = formatTime(elapsed);
+                
+                if (elapsed > 120) {
+                    timerEl.classList.add('warning');
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            gameState.totalTime = Math.floor((Date.now() - gameState.startTime) / 1000);
+        }
+
+        function displayQuestion() {
+            const question = gameState.questions[gameState.currentQuestion];
+            const container = document.getElementById('questionContainer');
+            const answerArea = document.getElementById('answerArea');
+            const feedbackArea = document.getElementById('feedbackArea');
+
+            feedbackArea.style.display = 'none';
+            document.getElementById('questionNum').textContent = gameState.currentQuestion + 1;
+
+            if (question.type === 'kanji-meaning') {
+                container.innerHTML = `
+                    <div class="question-type">What does this kanji mean?</div>
+                    <div class="kanji-display">${question.kanji}</div>
+                `;
+            } else if (question.type === 'kanji-reading') {
+                container.innerHTML = `
+                    <div class="question-type">How do you read this kanji?</div>
+                    <div class="kanji-display">${question.kanji}</div>
+                `;
+            } else if (question.type === 'vocabulary') {
+                container.innerHTML = `
+                    <div class="question-type">What does this word mean?</div>
+                    <div class="word-display">${question.word}</div>
+                    <div class="reading-hint">${question.reading}</div>
+                `;
+            }
+
+            answerArea.innerHTML = `
+                <div class="options-grid">
+                    ${question.options.map((opt, idx) => `
+                        <button class="option-btn" data-index="${idx}" onclick="selectAnswer(${idx})">
+                            ${opt.text}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function selectAnswer(index) {
+            const question = gameState.questions[gameState.currentQuestion];
+            const selectedOption = question.options[index];
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedbackArea = document.getElementById('feedbackArea');
+
+            buttons.forEach(btn => btn.disabled = true);
+
+            const isCorrect = selectedOption.correct;
+            buttons[index].classList.add(isCorrect ? 'correct' : 'incorrect');
+
+            if (!isCorrect) {
+                const correctIdx = question.options.findIndex(o => o.correct);
+                buttons[correctIdx].classList.add('correct');
+            }
+
+            // Update game state
+            if (isCorrect) {
+                gameState.correctCount++;
+                gameState.streak++;
+                gameState.maxStreak = Math.max(gameState.maxStreak, gameState.streak);
+                
+                // Score calculation: base points + speed bonus + streak bonus
+                const timeBonus = Math.max(0, 100 - Math.floor((Date.now() - gameState.startTime) / 1000));
+                const streakBonus = gameState.streak * 10;
+                gameState.score += 100 + timeBonus + streakBonus;
+            } else {
+                gameState.streak = 0;
+            }
+
+            gameState.answers.push({
+                question: question,
+                selected: selectedOption.text,
+                correct: isCorrect
+            });
+
+            // Show feedback
+            feedbackArea.innerHTML = `
+                <div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
+                    <div class="feedback-icon">${isCorrect ? '◯' : '✕'}</div>
+                    <div class="feedback-text">${isCorrect ? 'Correct!' : 'Incorrect'}</div>
+                    ${!isCorrect ? `<div class="correct-answer">The answer was: ${question.correctAnswer}</div>` : ''}
+                </div>
+            `;
+            feedbackArea.style.display = 'block';
+
+            // Auto-advance after a short delay
+            const delay = isCorrect ? 800 : 1500; // Longer delay for incorrect to show answer
+            setTimeout(() => {
+                nextQuestion();
+            }, delay);
+        }
+
+        function nextQuestion() {
+            gameState.currentQuestion++;
+
+            if (gameState.currentQuestion >= gameState.questions.length) {
+                endGame();
+            } else {
+                displayQuestion();
+            }
+        }
+
+        function endGame() {
+            stopTimer();
+            
+            const result = {
+                mode: gameState.mode,
+                score: gameState.score,
+                correct: gameState.correctCount,
+                total: gameState.questions.length,
+                time: gameState.totalTime,
+                streak: gameState.maxStreak,
+                date: getTodayKey(),
+                answers: gameState.answers
+            };
+
+            // Save to localStorage
+            const storageKey = `kanjido-${gameState.mode}-${getTodayKey()}`;
+            localStorage.setItem(storageKey, JSON.stringify(result));
+
+            // Update streak
+            updateDailyStreak();
+
+            // Display results
+            displayResults(result);
+        }
+
+        function displayResults(result) {
+            showScreen('resultsScreen');
+
+            document.getElementById('resultsDate').textContent = new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            document.getElementById('finalScore').textContent = result.score;
+            document.getElementById('correctCount').textContent = `${result.correct}/${result.total}`;
+            document.getElementById('totalTime').textContent = formatTime(result.time);
+            document.getElementById('streakCount').textContent = getDailyStreak();
+
+            // Generate share grid
+            const shareGrid = result.answers.map(a => a.correct ? '🟢' : '🔴').join('');
+            const shareText = `漢字道 ${getTodayKey()}\n${shareGrid}\nScore: ${result.score} | Time: ${formatTime(result.time)}`;
+            document.getElementById('shareGrid').textContent = shareText;
+
+            // Check and update personal bests
+            const newRecords = updatePersonalBests(result);
+            displayPersonalBests(result, newRecords);
+        }
+
+        function getPersonalBests(mode) {
+            const key = `kanjido-pb-${mode}`;
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : null;
+        }
+
+        function updatePersonalBests(result) {
+            const key = `kanjido-pb-${result.mode}`;
+            const current = getPersonalBests(result.mode);
+            const newRecords = {
+                score: false,
+                time: false,
+                accuracy: false
+            };
+
+            const accuracy = result.correct / result.total;
+
+            if (!current) {
+                // First time playing this mode
+                localStorage.setItem(key, JSON.stringify({
+                    bestScore: result.score,
+                    bestScoreDate: result.date,
+                    bestTime: result.time,
+                    bestTimeDate: result.date,
+                    bestAccuracy: accuracy,
+                    bestAccuracyDate: result.date,
+                    gamesPlayed: 1
+                }));
+                newRecords.score = true;
+                newRecords.time = true;
+                newRecords.accuracy = true;
+            } else {
+                let updated = { ...current, gamesPlayed: current.gamesPlayed + 1 };
+
+                if (result.score > current.bestScore) {
+                    updated.bestScore = result.score;
+                    updated.bestScoreDate = result.date;
+                    newRecords.score = true;
+                }
+
+                if (result.time < current.bestTime) {
+                    updated.bestTime = result.time;
+                    updated.bestTimeDate = result.date;
+                    newRecords.time = true;
+                }
+
+                if (accuracy > current.bestAccuracy) {
+                    updated.bestAccuracy = accuracy;
+                    updated.bestAccuracyDate = result.date;
+                    newRecords.accuracy = true;
+                }
+
+                localStorage.setItem(key, updated);
+                localStorage.setItem(key, JSON.stringify(updated));
+            }
+
+            return newRecords;
+        }
+
+        function displayPersonalBests(result, newRecords) {
+            const pb = getPersonalBests(result.mode);
+            const container = document.getElementById('personalBests');
+            
+            if (!pb) {
+                container.innerHTML = '<div class="no-pb">Play more to track your progress!</div>';
+                return;
+            }
+
+            const accuracy = result.correct / result.total;
+            const modeNames = {
+                'kanji': 'Kanji Meaning',
+                'reading': 'Kanji Reading',
+                'word': 'Vocabulary',
+                'mixed': 'Mixed Challenge'
+            };
+
+            const formatDate = (dateStr) => {
+                const [year, month, day] = dateStr.split('-');
+                return `${month}/${day}`;
+            };
+
+            const scoreImprovement = result.score - pb.bestScore;
+            const timeImprovement = pb.bestTime - result.time;
+            const accuracyImprovement = ((accuracy - pb.bestAccuracy) * 100).toFixed(0);
+
+            container.innerHTML = `
+                <div class="pb-item" style="background: rgba(26,26,26,0.03); border-bottom: 1px solid rgba(26,26,26,0.1);">
+                    <span class="pb-label" style="font-size: 0.8rem; color: var(--moss);">${modeNames[result.mode]} • ${pb.gamesPlayed} games played</span>
+                </div>
+                <div class="pb-item ${newRecords.score ? 'new-record' : ''}">
+                    <span class="pb-label">
+                        Best Score
+                        ${newRecords.score ? '<span class="new-record-badge">New!</span>' : ''}
+                    </span>
+                    <span class="pb-value">${pb.bestScore}</span>
+                    <span class="pb-date">${formatDate(pb.bestScoreDate)}</span>
+                </div>
+                <div class="pb-item ${newRecords.time ? 'new-record' : ''}">
+                    <span class="pb-label">
+                        Fastest Time
+                        ${newRecords.time ? '<span class="new-record-badge">New!</span>' : ''}
+                    </span>
+                    <span class="pb-value">${formatTime(pb.bestTime)}</span>
+                    <span class="pb-date">${formatDate(pb.bestTimeDate)}</span>
+                </div>
+                <div class="pb-item ${newRecords.accuracy ? 'new-record' : ''}">
+                    <span class="pb-label">
+                        Best Accuracy
+                        ${newRecords.accuracy ? '<span class="new-record-badge">New!</span>' : ''}
+                    </span>
+                    <span class="pb-value">${Math.round(pb.bestAccuracy * 100)}%</span>
+                    <span class="pb-date">${formatDate(pb.bestAccuracyDate)}</span>
+                </div>
+                <div class="pb-item" style="border-top: 1px solid rgba(26,26,26,0.1); margin-top: 0.5rem; padding-top: 1rem;">
+                    <span class="pb-label" style="font-size: 0.85rem; color: var(--moss);">Today's Results</span>
+                </div>
+                <div class="pb-item">
+                    <span class="pb-label">Score</span>
+                    <span class="pb-value">${result.score}</span>
+                    ${!newRecords.score ? `<span class="improvement ${scoreImprovement >= 0 ? '' : 'negative'}">${scoreImprovement >= 0 ? '+' : ''}${scoreImprovement} from best</span>` : '<span class="pb-date"></span>'}
+                </div>
+                <div class="pb-item">
+                    <span class="pb-label">Time</span>
+                    <span class="pb-value">${formatTime(result.time)}</span>
+                    ${!newRecords.time ? `<span class="improvement ${timeImprovement >= 0 ? '' : 'negative'}">${timeImprovement >= 0 ? '+' : ''}${timeImprovement}s ${timeImprovement >= 0 ? 'faster' : 'slower'}</span>` : '<span class="pb-date"></span>'}
+                </div>
+                <div class="pb-item">
+                    <span class="pb-label">Accuracy</span>
+                    <span class="pb-value">${Math.round(accuracy * 100)}%</span>
+                    ${!newRecords.accuracy ? `<span class="improvement ${parseFloat(accuracyImprovement) >= 0 ? '' : 'negative'}">${parseFloat(accuracyImprovement) >= 0 ? '+' : ''}${accuracyImprovement}%</span>` : '<span class="pb-date"></span>'}
+                </div>
+            `;
+        }
+
+        function copyResults() {
+            const shareText = document.getElementById('shareGrid').textContent;
+            navigator.clipboard.writeText(shareText).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy Results';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function showAlreadyPlayed(saved, mode) {
+            showScreen('alreadyPlayedScreen');
+            
+            // Show countdown to next day
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+
+            // Show previous results
+            const prevResults = document.getElementById('previousResults');
+            prevResults.innerHTML = `
+                <div class="score-display">
+                    <div class="score-number">${saved.score}</div>
+                    <div class="score-label">Your Score</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">${saved.correct}/${saved.total}</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${formatTime(saved.time)}</div>
+                        <div class="stat-label">Time</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${getDailyStreak()}</div>
+                        <div class="stat-label">Streak</div>
+                    </div>
+                </div>
+                <button class="play-again-btn" onclick="showScreen('startScreen')">Try Another Mode</button>
+            `;
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const diff = tomorrow - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('comebackTime').textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function getDailyStreak() {
+            const streak = localStorage.getItem('kanjido-streak') || '0';
+            return parseInt(streak);
+        }
+
+        function updateDailyStreak() {
+            const lastPlayed = localStorage.getItem('kanjido-last-played');
+            const today = getTodayKey();
+            
+            if (!lastPlayed) {
+                localStorage.setItem('kanjido-streak', '1');
+            } else {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayKey = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+                if (lastPlayed === yesterdayKey) {
+                    const currentStreak = getDailyStreak();
+                    localStorage.setItem('kanjido-streak', String(currentStreak + 1));
+                } else if (lastPlayed !== today) {
+                    localStorage.setItem('kanjido-streak', '1');
+                }
+            }
+
+            localStorage.setItem('kanjido-last-played', today);
+        }
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateDisplay();
+        });
+    </script>
+</body>
+</html>
