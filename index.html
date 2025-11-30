@@ -96,6 +96,218 @@
             font-weight: 500;
         }
 
+        .header-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(26, 26, 26, 0.08);
+        }
+
+        .header-nav a {
+            font-size: 0.8rem;
+            color: var(--moss);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            transition: color 0.2s ease;
+        }
+
+        .header-nav a:hover {
+            color: var(--ink);
+        }
+
+        /* Policy Pages */
+        .policy-page {
+            padding: 1rem 0 2rem;
+        }
+
+        .policy-title {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .policy-subtitle {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1rem;
+            color: var(--vermillion);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .policy-date {
+            font-size: 0.8rem;
+            color: var(--moss);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .policy-content {
+            background: var(--cream);
+            border: 1px solid rgba(26, 26, 26, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .policy-content h3 {
+            font-family: 'Shippori Mincho', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--ink);
+        }
+
+        .policy-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .policy-content h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem;
+            color: var(--ink);
+        }
+
+        .policy-content p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 0.75rem;
+            color: var(--ink);
+            opacity: 0.85;
+        }
+
+        .policy-content ul {
+            margin: 0.75rem 0 1rem 1.5rem;
+        }
+
+        .policy-content li {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 0.4rem;
+            color: var(--ink);
+            opacity: 0.85;
+        }
+
+        .policy-content a {
+            color: var(--vermillion);
+            text-decoration: none;
+        }
+
+        .policy-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            margin: 1.5rem 0;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--ink);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 1rem;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(26, 26, 26, 0.2);
+            background: var(--paper);
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--ink);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .contact-success {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(74, 124, 89, 0.1);
+            border: 1px solid var(--correct);
+            margin: 1.5rem 0;
+        }
+
+        .contact-success .feedback-icon {
+            font-size: 2.5rem;
+            color: var(--correct);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--cream);
+            border-top: 1px solid rgba(26, 26, 26, 0.1);
+            padding: 2rem 1rem;
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links a {
+            font-size: 0.85rem;
+            color: var(--moss);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--ink);
+        }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: var(--ink);
+            opacity: 0.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-disclaimer {
+            font-size: 0.75rem;
+            color: var(--moss);
+            line-height: 1.5;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
         /* Main container */
         main {
             max-width: 600px;
@@ -833,6 +1045,16 @@
                 padding: 1.25rem 0.75rem 0.5rem;
             }
 
+            .header-nav {
+                gap: 1rem;
+                margin-top: 0.75rem;
+                padding-top: 0.75rem;
+            }
+
+            .header-nav a {
+                font-size: 0.75rem;
+            }
+
             .logo {
                 font-size: 1.8rem;
                 letter-spacing: 0.15em;
@@ -1050,6 +1272,36 @@
             .already-played {
                 padding: 2rem 0.5rem;
             }
+
+            /* Policy pages mobile */
+            .policy-title {
+                font-size: 1.5rem;
+            }
+
+            .policy-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .policy-content {
+                padding: 1.25rem;
+            }
+
+            .policy-content h3 {
+                font-size: 1.1rem;
+            }
+
+            .policy-content p,
+            .policy-content li {
+                font-size: 0.9rem;
+            }
+
+            .footer-links {
+                gap: 1rem;
+            }
+
+            .footer-links a {
+                font-size: 0.8rem;
+            }
         }
 
         @media (max-width: 360px) {
@@ -1115,9 +1367,15 @@
 </head>
 <body>
     <header>
-        <h1 class="logo">KANJIDŌ</h1>
+        <h1 class="logo">DAILY NIHONGO</h1>
         <p class="subtitle">Daily Kanji Challenge</p>
         <p class="date-display" id="dateDisplay"></p>
+        <nav class="header-nav">
+            <a href="#" onclick="showPage('game'); return false;">Play</a>
+            <a href="#" onclick="showPage('about'); return false;">About</a>
+            <a href="#" onclick="showPage('contact'); return false;">Contact</a>
+            <a href="#" onclick="showPage('privacy'); return false;">Privacy</a>
+        </nav>
     </header>
 
     <main>
@@ -1235,7 +1493,258 @@
                 </div>
             </div>
         </div>
+
+        <!-- About Page -->
+        <div class="screen" id="aboutPage">
+            <div class="policy-page">
+                <h2 class="policy-title">About Kanjidō</h2>
+                <p class="policy-subtitle">漢字道について</p>
+
+                <div class="policy-content">
+                    <h3>Our Mission</h3>
+                    <p>Kanjidō (漢字道, "The Way of Kanji") is a free daily Japanese language learning game designed to help students and enthusiasts improve their kanji recognition and vocabulary skills through engaging, bite-sized challenges.</p>
+
+                    <h3>How It Works</h3>
+                    <p>Every day, Kanjidō presents a fresh set of 10 questions across four different game modes:</p>
+                    <ul>
+                        <li><strong>Kanji Meaning</strong> — Match kanji characters to their English meanings</li>
+                        <li><strong>Kanji Reading</strong> — Identify the correct hiragana reading for each kanji</li>
+                        <li><strong>Vocabulary</strong> — Learn common Japanese words and their definitions</li>
+                        <li><strong>Mixed Challenge</strong> — A combination of all question types for comprehensive practice</li>
+                    </ul>
+
+                    <h3>Daily Challenge Format</h3>
+                    <p>Like popular daily word games, Kanjidō resets at midnight each day with new questions. Everyone around the world receives the same questions on any given day, making it easy to compare your results with friends and fellow learners. Your score is based on accuracy, speed, and answer streaks.</p>
+
+                    <h3>Track Your Progress</h3>
+                    <p>Kanjidō automatically saves your personal bests for each game mode, including your highest score, fastest completion time, and best accuracy percentage. Build your daily streak by playing consistently!</p>
+
+                    <h3>JLPT Levels</h3>
+                    <p>Our kanji and vocabulary database primarily covers JLPT N5 and N4 level content, making it perfect for beginners and intermediate learners. We regularly update our question bank to provide fresh learning opportunities.</p>
+
+                    <h3>Free to Play</h3>
+                    <p>Kanjidō is completely free to use. We display advertisements to support the ongoing development and maintenance of the game. Thank you for your understanding and support!</p>
+                </div>
+
+                <button class="play-again-btn" onclick="showPage('game')">← Back to Game</button>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div class="screen" id="contactPage">
+            <div class="policy-page">
+                <h2 class="policy-title">Contact Us</h2>
+                <p class="policy-subtitle">お問い合わせ</p>
+
+                <div class="policy-content">
+                    <h3>Get in Touch</h3>
+                    <p>We'd love to hear from you! Whether you have questions, feedback, bug reports, or suggestions for improving Kanjidō, please don't hesitate to reach out.</p>
+
+                    <div class="contact-form">
+                        <div class="form-group">
+                            <label for="contactName">Your Name</label>
+                            <input type="text" id="contactName" placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email Address</label>
+                            <input type="email" id="contactEmail" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="contactSubject">Subject</label>
+                            <select id="contactSubject">
+                                <option value="">Select a topic...</option>
+                                <option value="feedback">General Feedback</option>
+                                <option value="bug">Bug Report</option>
+                                <option value="suggestion">Feature Suggestion</option>
+                                <option value="content">Content Error</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">Message</label>
+                            <textarea id="contactMessage" rows="5" placeholder="Write your message here..."></textarea>
+                        </div>
+                        <button class="submit-btn" onclick="submitContact()">Send Message</button>
+                    </div>
+
+                    <div id="contactSuccess" class="contact-success" style="display: none;">
+                        <div class="feedback-icon">✓</div>
+                        <p>Thank you for your message! We'll get back to you as soon as possible.</p>
+                    </div>
+
+                    <h3>Other Ways to Reach Us</h3>
+                    <p><strong>Email:</strong> cocoacodeco@gmail.com</p>
+                    <p><strong>Response Time:</strong> We typically respond within 24-48 hours.</p>
+                </div>
+
+                <button class="play-again-btn" onclick="showPage('game')">← Back to Game</button>
+            </div>
+        </div>
+
+        <!-- Privacy Policy Page -->
+        <div class="screen" id="privacyPage">
+            <div class="policy-page">
+                <h2 class="policy-title">Privacy Policy</h2>
+                <p class="policy-subtitle">プライバシーポリシー</p>
+                <p class="policy-date">Last Updated: November 2025</p>
+
+                <div class="policy-content">
+                    <h3>Introduction</h3>
+                    <p>Welcome to Kanjidō ("we," "our," or "us"). We are committed to protecting your privacy and ensuring transparency about how we collect, use, and safeguard your information. This Privacy Policy explains our practices regarding data collection when you use our website.</p>
+
+                    <h3>Information We Collect</h3>
+                    
+                    <h4>Information Stored Locally</h4>
+                    <p>Kanjidō stores the following information locally on your device using browser localStorage:</p>
+                    <ul>
+                        <li>Game progress and completion status</li>
+                        <li>Personal best scores, times, and accuracy for each game mode</li>
+                        <li>Daily streak count</li>
+                        <li>Date of last gameplay</li>
+                    </ul>
+                    <p>This information never leaves your device and is not transmitted to our servers.</p>
+
+                    <h4>Information Collected Automatically</h4>
+                    <p>When you visit our website, we may automatically collect certain information, including:</p>
+                    <ul>
+                        <li>IP address</li>
+                        <li>Browser type and version</li>
+                        <li>Operating system</li>
+                        <li>Pages visited and time spent on pages</li>
+                        <li>Referring website</li>
+                        <li>Device type (desktop, mobile, tablet)</li>
+                    </ul>
+
+                    <h3>How We Use Your Information</h3>
+                    <p>We use the collected information to:</p>
+                    <ul>
+                        <li>Provide and maintain our service</li>
+                        <li>Improve and optimize our website</li>
+                        <li>Analyze usage patterns and trends</li>
+                        <li>Display relevant advertisements</li>
+                        <li>Detect and prevent technical issues</li>
+                    </ul>
+
+                    <h3>Advertising</h3>
+                    <p>We use Google AdSense to display advertisements on our website. Google AdSense uses cookies and similar technologies to serve ads based on your prior visits to our website and other websites. Google's use of advertising cookies enables it and its partners to serve ads based on your visit to our site and/or other sites on the Internet.</p>
+                    <p>You may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google Ads Settings</a>. Alternatively, you can opt out of third-party vendor cookies by visiting the <a href="https://optout.networkadvertising.org/" target="_blank" rel="noopener">Network Advertising Initiative opt-out page</a>.</p>
+
+                    <h3>Cookies</h3>
+                    <p>Cookies are small text files stored on your device. We use cookies for:</p>
+                    <ul>
+                        <li><strong>Essential cookies:</strong> Required for basic website functionality</li>
+                        <li><strong>Analytics cookies:</strong> Help us understand how visitors use our site</li>
+                        <li><strong>Advertising cookies:</strong> Used to deliver relevant advertisements</li>
+                    </ul>
+                    <p>You can control cookie settings through your browser preferences. Note that disabling cookies may affect website functionality.</p>
+
+                    <h3>Third-Party Services</h3>
+                    <p>We may use third-party services that collect, monitor, and analyze data:</p>
+                    <ul>
+                        <li><strong>Google AdSense:</strong> For displaying advertisements</li>
+                        <li><strong>Google Analytics:</strong> For website analytics and performance monitoring</li>
+                    </ul>
+                    <p>These services have their own privacy policies governing the use of your information.</p>
+
+                    <h3>Data Security</h3>
+                    <p>We implement appropriate technical and organizational measures to protect your information. However, no method of transmission over the Internet is 100% secure, and we cannot guarantee absolute security.</p>
+
+                    <h3>Children's Privacy</h3>
+                    <p>Our service is not directed to children under 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.</p>
+
+                    <h3>Your Rights</h3>
+                    <p>Depending on your location, you may have the right to:</p>
+                    <ul>
+                        <li>Access the personal information we hold about you</li>
+                        <li>Request correction of inaccurate information</li>
+                        <li>Request deletion of your information</li>
+                        <li>Opt out of certain data processing activities</li>
+                        <li>Withdraw consent where processing is based on consent</li>
+                    </ul>
+
+                    <h3>Changes to This Policy</h3>
+                    <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+
+                    <h3>Contact Us</h3>
+                    <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+                    <p><strong>Email:</strong> cocoacodeco@gmail.com</p>
+                </div>
+
+                <button class="play-again-btn" onclick="showPage('game')">← Back to Game</button>
+            </div>
+        </div>
+
+        <!-- Terms of Service Page -->
+        <div class="screen" id="termsPage">
+            <div class="policy-page">
+                <h2 class="policy-title">Terms of Service</h2>
+                <p class="policy-subtitle">利用規約</p>
+                <p class="policy-date">Last Updated: November 2025</p>
+
+                <div class="policy-content">
+                    <h3>1. Acceptance of Terms</h3>
+                    <p>By accessing and using Kanjidō ("the Service"), you accept and agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service.</p>
+
+                    <h3>2. Description of Service</h3>
+                    <p>Kanjidō is a free online Japanese language learning game that provides daily kanji and vocabulary quizzes. The Service is provided "as is" and is intended for educational and entertainment purposes.</p>
+
+                    <h3>3. User Conduct</h3>
+                    <p>You agree not to:</p>
+                    <ul>
+                        <li>Use the Service for any unlawful purpose</li>
+                        <li>Attempt to gain unauthorized access to any part of the Service</li>
+                        <li>Interfere with or disrupt the Service or servers</li>
+                        <li>Use automated systems or software to extract data from the Service</li>
+                        <li>Reproduce, duplicate, or copy any part of the Service without permission</li>
+                    </ul>
+
+                    <h3>4. Intellectual Property</h3>
+                    <p>All content on Kanjidō, including but not limited to text, graphics, logos, and software, is the property of Kanjidō or its content suppliers and is protected by intellectual property laws. You may not use, reproduce, or distribute any content without our prior written permission.</p>
+
+                    <h3>5. Disclaimer of Warranties</h3>
+                    <p>The Service is provided on an "AS IS" and "AS AVAILABLE" basis. We make no warranties, expressed or implied, regarding the reliability, accuracy, or availability of the Service. We do not guarantee that the Service will be uninterrupted, error-free, or free of viruses.</p>
+
+                    <h3>6. Limitation of Liability</h3>
+                    <p>To the fullest extent permitted by law, Kanjidō shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service.</p>
+
+                    <h3>7. Educational Content Disclaimer</h3>
+                    <p>While we strive for accuracy, the kanji and vocabulary content provided is for educational purposes only. We recommend verifying information with official Japanese language resources and textbooks.</p>
+
+                    <h3>8. Advertisements</h3>
+                    <p>The Service may display third-party advertisements. We are not responsible for the content of these advertisements or any products or services offered by advertisers.</p>
+
+                    <h3>9. Modifications to Service</h3>
+                    <p>We reserve the right to modify, suspend, or discontinue the Service at any time without notice. We shall not be liable to you or any third party for any modification, suspension, or discontinuation.</p>
+
+                    <h3>10. Changes to Terms</h3>
+                    <p>We may revise these Terms of Service at any time. By continuing to use the Service after changes are posted, you accept the revised terms.</p>
+
+                    <h3>11. Governing Law</h3>
+                    <p>These Terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law principles.</p>
+
+                    <h3>12. Contact Information</h3>
+                    <p>For questions about these Terms of Service, please contact us at:</p>
+                    <p><strong>Email:</strong> cocoacodeco@gmail.com</p>
+                </div>
+
+                <button class="play-again-btn" onclick="showPage('game')">← Back to Game</button>
+            </div>
+        </div>
     </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#" onclick="showPage('about'); return false;">About</a>
+                <a href="#" onclick="showPage('contact'); return false;">Contact</a>
+                <a href="#" onclick="showPage('privacy'); return false;">Privacy Policy</a>
+                <a href="#" onclick="showPage('terms'); return false;">Terms of Service</a>
+            </div>
+            <p class="footer-copy">© 2025 Kanjidō. All rights reserved.</p>
+            <p class="footer-disclaimer">Kanjidō is an independent educational project and is not affiliated with the JLPT or any official Japanese language certification body.</p>
+        </div>
+    </footer>
 
     <script>
         // ==================== DATA ====================
@@ -1978,6 +2487,60 @@
             }
 
             localStorage.setItem('dailynihongo-last-played', today);
+        }
+
+        // ==================== PAGE NAVIGATION ====================
+        function showPage(page) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            
+            // Show the requested page
+            if (page === 'game') {
+                document.getElementById('startScreen').classList.add('active');
+            } else if (page === 'about') {
+                document.getElementById('aboutPage').classList.add('active');
+            } else if (page === 'contact') {
+                document.getElementById('contactPage').classList.add('active');
+                // Reset contact form
+                document.getElementById('contactSuccess').style.display = 'none';
+                document.querySelector('.contact-form').style.display = 'block';
+            } else if (page === 'privacy') {
+                document.getElementById('privacyPage').classList.add('active');
+            } else if (page === 'terms') {
+                document.getElementById('termsPage').classList.add('active');
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function submitContact() {
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value.trim();
+
+            // Basic validation
+            if (!name || !email || !subject || !message) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            // In a real implementation, this would send to a server
+            // For now, just show success message
+            document.querySelector('.contact-form').style.display = 'none';
+            document.getElementById('contactSuccess').style.display = 'block';
+
+            // Clear form
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('contactSubject').value = '';
+            document.getElementById('contactMessage').value = '';
         }
 
         // ==================== INITIALIZATION ====================
