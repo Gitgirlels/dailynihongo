@@ -1563,7 +1563,7 @@
 
         // ==================== GAME LOGIC ====================
         function startGame(mode) {
-            const storageKey = `kanjido-${mode}-${getTodayKey()}`;
+            const storageKey = `dailynihongo-${mode}-${getTodayKey()}`;
             const savedGame = localStorage.getItem(storageKey);
 
             if (savedGame) {
@@ -1724,7 +1724,7 @@
             };
 
             // Save to localStorage
-            const storageKey = `kanjido-${gameState.mode}-${getTodayKey()}`;
+            const storageKey = `dailynihongo-${gameState.mode}-${getTodayKey()}`;
             localStorage.setItem(storageKey, JSON.stringify(result));
 
             // Update streak
@@ -1760,13 +1760,13 @@
         }
 
         function getPersonalBests(mode) {
-            const key = `kanjido-pb-${mode}`;
+            const key = `dailynihongo-pb-${mode}`;
             const stored = localStorage.getItem(key);
             return stored ? JSON.parse(stored) : null;
         }
 
         function updatePersonalBests(result) {
-            const key = `kanjido-pb-${result.mode}`;
+            const key = `dailynihongo-pb-${result.mode}`;
             const current = getPersonalBests(result.mode);
             const newRecords = {
                 score: false,
@@ -1954,16 +1954,16 @@
         }
 
         function getDailyStreak() {
-            const streak = localStorage.getItem('kanjido-streak') || '0';
+            const streak = localStorage.getItem('dailynihongo-streak') || '0';
             return parseInt(streak);
         }
 
         function updateDailyStreak() {
-            const lastPlayed = localStorage.getItem('kanjido-last-played');
+            const lastPlayed = localStorage.getItem('dailynihongo-last-played');
             const today = getTodayKey();
             
             if (!lastPlayed) {
-                localStorage.setItem('kanjido-streak', '1');
+                localStorage.setItem('dailynihongo-streak', '1');
             } else {
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
@@ -1971,13 +1971,13 @@
 
                 if (lastPlayed === yesterdayKey) {
                     const currentStreak = getDailyStreak();
-                    localStorage.setItem('kanjido-streak', String(currentStreak + 1));
+                    localStorage.setItem('dailynihongo-streak', String(currentStreak + 1));
                 } else if (lastPlayed !== today) {
-                    localStorage.setItem('kanjido-streak', '1');
+                    localStorage.setItem('dailynihongo-streak', '1');
                 }
             }
 
-            localStorage.setItem('kanjido-last-played', today);
+            localStorage.setItem('dailynihongo-last-played', today);
         }
 
         // ==================== INITIALIZATION ====================
